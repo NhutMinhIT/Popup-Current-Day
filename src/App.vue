@@ -1,28 +1,53 @@
+<!-- App.vue -->
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <button type="button" class="btn" @click="showModal">Open Modal!</button>
+    <Popup v-show="isModalVisible" @close="closeModal">
+      <template v-slot:header>This is a new modal header.</template>
+      <template v-slot:body>This is a new modal body.</template>
+      <template v-slot:footer>This is a new modal footer.</template>
+    </Popup>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Popup from "@/components/Popup/PopupComponent.vue"; // Adjust the path accordingly
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+  components: { Popup },
+  data() {
+    return {
+      isModalVisible: true,
+    };
+  },
+  mounted() {
+    // Check if modal has been shown today
+    const modalShownToday = localStorage.getItem("modalShownDate");
+    const currentDate = new Date().toDateString();
+
+    if (modalShownToday !== currentDate) {
+      this.isModalVisible = true;
+      localStorage.setItem("modalShownDate", currentDate);
+    } else {
+      this.isModalVisible = false; // Set isModalVisible to false if modal has been shown today
+    }
+  },
+  methods: {
+    showModal() {
+      this.isModalVisible = true;
+    },
+    closeModal() {
+      this.isModalVisible = false;
+    },
+  },
+};
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+.btn {
+  z-index: 0;
+  position: absolute;
+  left: 50%;
+  top: 40%;
 }
 </style>
