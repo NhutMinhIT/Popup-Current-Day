@@ -1,54 +1,65 @@
-<!-- PopUp.vue -->
 <template>
-  <transition name="modal-fade">
-    <div class="modal-backdrop">
-      <div
-        class="modal"
-        role="dialog"
-        aria-labelledby="modalTitle"
-        aria-describedby="modalDescription"
-      >
-        <header class="modal-header" id="modalTitle">
-          <slot name="header"></slot>
+  <div
+    class="modal fade"
+    id="exampleModal"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
           <button
             type="button"
             class="btn-close"
-            @click="close"
-            aria-label="Close Modal"
+            @click="closeModal"
+            data-bs-dismiss="modal"
+            aria-label="Close"
           >
-            x
+            X
           </button>
-        </header>
-
-        <section class="modal-body" id="modalDescription">
-          <slot name="body">This is the default body!</slot>
-        </section>
-
-        <footer class="modal-footer" id="modalFooter">
-          <slot name="footer">This is the default footer!</slot>
-          <button type="button" class="btn-green" @click="close">
-            Close Modal
-          </button>
-        </footer>
+        </div>
+        <div class="modal-body">
+          <h2 class="modal-title" id="exampleModalLabel">Modal title</h2>
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        </div>
       </div>
     </div>
-  </transition>
+  </div>
 </template>
 
-<script>
-export default {
-  methods: {
-    close() {
-      this.$emit("close");
-    },
-  },
+<script setup lang="ts">
+import { onMounted } from "vue";
+import { Modal } from "bootstrap";
+
+const closeModal = () => {
+  Modal.getInstance("#exampleModal").hide();
+  localStorage.setItem("lastClosedTime", new Date().getTime().toString());
 };
+
+onMounted(() => {
+  const lastClosedTime = localStorage.getItem("lastClosedTime");
+  console.log("lastClosedTime " + lastClosedTime);
+
+  const currentTime = new Date().getTime();
+  console.log("currentTime" + currentTime);
+
+  const timeDifference = currentTime - parseInt(lastClosedTime || "0");
+  console.log("timeDifference" + timeDifference);
+
+  // Nếu chưa từng đóng hoặc đã đóng hơn 24 giờ
+  if (!lastClosedTime || timeDifference >= 24 * 60 * 60 * 1000) {
+    Modal.getOrCreateInstance("#exampleModal").show();
+  }
+});
 </script>
 
 <style>
 .modal {
   background: #ffffff;
-  box-shadow: 2px 2px 20px 1px rgba(0, 0, 0, 0.2); /* Use rgba for better shadow */
+  box-shadow: 2px 2px 20px 1px rgba(0, 0, 0, 0.2);
   overflow-x: auto;
   width: 300px;
   height: 300px;
